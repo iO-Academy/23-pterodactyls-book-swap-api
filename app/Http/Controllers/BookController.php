@@ -11,7 +11,7 @@ class BookController extends Controller
     {
         return response()->json([
             'data' => Book::all()->makeHidden(['updated_at', 'created_at']),
-            'message' => 'success',
+            'message' => 'Books successfully retrieved',
         ]);
     }
 }
