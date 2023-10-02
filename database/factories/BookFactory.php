@@ -23,7 +23,7 @@ class BookFactory extends Factory
             'page_count' => $this->faker->numberBetween(0, 5000),
             'image' => $this->faker->url(),
             'year' => $this->faker->year(),
-            'deleted' => $this->faker->boolean()
+            'deleted' => $this->faker->boolean(),
         ];
     }
 }
