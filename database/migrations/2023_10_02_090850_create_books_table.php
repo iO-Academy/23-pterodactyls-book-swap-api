@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->binary('claimed');
+            $table->binary('claimed')->default(0);
             $table->integer('genre_id');
             $table->string('page_count');
-            $table->string('claimed_by');
+            $table->string('claimed_by')->nullable();
             $table->string('image')->nullable();
             $table->year('year');
             $table->integer('review_id');
