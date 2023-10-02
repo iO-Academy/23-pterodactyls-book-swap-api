@@ -13,7 +13,13 @@ class BookFactory extends Factory
      * Define the model's default state.
      *
      * @return array<string, mixed>
+     * 
+     * 
      */
+
+
+
+     
     public function definition(): array
     {
         return [
@@ -23,7 +29,7 @@ class BookFactory extends Factory
             'page_count' => $this->faker->numberBetween(0, 5000),
             'image' => $this->faker->url(),
             'year' => $this->faker->year(),
-            'deleted' => $this->faker->boolean()
+            'deleted' => $this->faker->boolean()           
         ];
     }
 }
