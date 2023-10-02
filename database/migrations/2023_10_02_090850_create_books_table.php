@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->binary('claimed')->default(0);
             $table->integer('genre_id');
-            $table->string('page_count');
+            $table->integer('page_count');
             $table->string('claimed_by')->nullable();
             $table->string('image')->nullable();
             $table->year('year');
