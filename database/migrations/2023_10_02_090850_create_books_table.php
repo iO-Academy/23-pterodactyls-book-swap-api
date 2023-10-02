@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('claimed_by')->nullable();
             $table->string('image')->nullable();
             $table->year('year');
-            $table->integer('review_id');
+            $table->integer('review_id')->nullable();
             $table->string('email_of_owner')->nullable();
             $table->string('name_of_owner')->nullable();
             $table->binary('deleted')->default(0);
