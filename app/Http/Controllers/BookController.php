@@ -10,6 +10,9 @@ class BookController extends Controller
     //
     public function getAllBooks()
     {
-        return Book::all();
+        return response()->json([
+            'data' => Book::all(),
+            'message' => 'success'
+        ]);
     }
 }

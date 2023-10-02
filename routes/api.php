@@ -19,7 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::controller(BookController::class)->group(function () {
     Route::get('/books', 'getAllBooks');
 });
