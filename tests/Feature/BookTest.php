@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
+use App\Models\Genre;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -15,7 +16,6 @@ class BookTest extends TestCase
     {
 
         Book::factory()->create();
-
         $response = $this->getJson('/api/books');
 
         $response->assertStatus(200)
@@ -25,27 +25,26 @@ class BookTest extends TestCase
                         $json->hasAll([
                             'id',
                             'title',
-                            'claimed',
-                            'genre_id',
-                            'page_count',
-                            'claimed_by',
+                            'author',
                             'image',
-                            'year',
-                            'review_id',
-                            'email_of_owner',
-                            'name_of_owner',
-                            'deleted',
+                            'genre',
                         ])
                             ->whereAllType([
                                 'id' => 'integer',
                                 'title' => 'string',
-                                'claimed' => 'integer',
-                                'genre_id' => 'integer',
-                                'page_count' => 'integer',
+                                'author' => 'string',
                                 'image' => 'string',
-                                'year' => 'integer',
-                                'deleted' => 'integer',
-                            ]);
+                            ])
+                            ->has('genre', function (AssertableJson $json) {
+                                $json->hasAll([
+                                    'id',
+                                    'name',
+                                ])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'name' => 'string',
+                                    ]);
+                            });
                     });
             });
     }
