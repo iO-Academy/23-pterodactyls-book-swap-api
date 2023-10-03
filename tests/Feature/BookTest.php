@@ -108,7 +108,15 @@ class BookTest extends TestCase
             });
     }
 
-    // public function test_failure_getBookFromId(): void
-    // {
-    // }
+    public function test_failure_getBookFromId(): void
+    {
+        Review::factory()->create();
+        $response = $this->getJson("/api/books/100");
+
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message'])
+                    ->whereContains('message', "Book with id 100 not found");
+            });
+    }
 }

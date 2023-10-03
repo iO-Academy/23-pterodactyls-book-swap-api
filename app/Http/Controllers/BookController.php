@@ -23,7 +23,7 @@ class BookController extends Controller
         if (!$book) {
             return response()->json([
                 "message" => "Book with id $id not found"
-            ]);
+            ], 404);
         }
 
         return response()->json([
@@ -39,35 +39,31 @@ class BookController extends Controller
 
         if ($bookToUpdate) {
 
-            if($bookToUpdate->claimed == 1) {
+            if ($bookToUpdate->claimed == 1) {
                 return response()->json([
                     'message' => "Book $id is already claimed",
-                ],400);
-            }
-                elseif($bookToUpdate->claimed == 0) {
+                ], 400);
+            } elseif ($bookToUpdate->claimed == 0) {
 
-                    $request->validate([
-                        'name' => 'string|min:1|required',
-                        'email' => 'string|email|required',
+                $request->validate([
+                    'name' => 'string|min:1|required',
+                    'email' => 'string|email|required',
+                ]);
+
+                $bookToUpdate->name = $request->name;
+                $bookToUpdate->email = $request->email;
+                $bookToUpdate->claimed = 1;
+
+                if ($bookToUpdate->save()) {
+                    return response()->json([
+                        'message' => "Book $id was claimed",
                     ]);
-    
-                    $bookToUpdate->name = $request->name;
-                    $bookToUpdate->email = $request->email;
-                    $bookToUpdate->claimed = 1;
-    
-                    if ($bookToUpdate->save()) {
-                        return response()->json([
-                            'message' => "Book $id was claimed",
-                        ]);
-                    }
-                } 
+                }
+            }
         }
 
         return response()->json([
             'message' => "Book $id was not found",
-        ],404);
-
+        ], 404);
     }
-
-
 }
