@@ -14,4 +14,20 @@ class BookController extends Controller
             'message' => 'Book successfully retrieved',
         ]);
     }
+
+    public function getBookFromId(int $id)
+    {
+        $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
+
+        if (! $book) {
+            return response()->json([
+                'message' => "Book with id $id not found",
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => $book,
+            'message' => 'Book successfully found',
+        ]);
+    }
 }

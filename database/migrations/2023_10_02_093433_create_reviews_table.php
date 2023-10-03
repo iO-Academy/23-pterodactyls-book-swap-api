@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('review', 500);
             $table->string('name');
             $table->integer('rating');
-            $table->integer('book_id');
             $table->timestamps();
         });
     }
