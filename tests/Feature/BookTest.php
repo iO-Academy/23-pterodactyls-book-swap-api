@@ -175,4 +175,61 @@ class BookTest extends TestCase
         ]);
 
     }
+
+    public function test_unclaim_noData(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->putJson("/api/books/unclaim/$book->id");
+
+        $response->assertStatus(400)
+            ->assertInvalid(['email', 'name'])
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
+    }
+
+    public function test_unclaim_noId(): void
+    {
+        $response = $this->putJson('/api/books/unclaim/1');
+
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+    }
+
+    public function test_unclaim_alreadyUnclaim(): void
+    {
+        $book = Book::factory(['claimed' => 0])->create();
+
+        $response = $this->putJson("/api/books/unclaim/$book->id");
+        $response->assertStatus(400);
+
+    }
+
+    public function test_unclaim_success(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->putJson("/api/books/unclaim/$book->id", [
+            'name' => 'name',
+            'email' => 'email@email.com',
+            'claimed' => 1,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll([
+                    'message',
+                ]);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'claimed_by_name' => 'name',
+            'email' => 'email@email.com',
+            'claimed' => 0,
+        ]);
+
+    }
 }
