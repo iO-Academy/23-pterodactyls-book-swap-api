@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('author');
-            $table->binary('claimed')->default(0);
+            $table->boolean('claimed')->default(0);
             $table->integer('page_count')->nullable();
             $table->string('claimed_by_name')->nullable();
             $table->string('image')->nullable();
             $table->year('year')->nullable();
-            $table->integer('review_id')->nullable();
+            $table->string('blurb')->nullable();
             $table->string('email')->nullable();
             $table->string('name')->nullable();
             $table->softDeletes();
