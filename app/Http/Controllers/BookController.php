@@ -20,15 +20,15 @@ class BookController extends Controller
     {
         $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
-                "message" => "Book with id $id not found"
+                'message' => "Book with id $id not found",
             ], 404);
         }
 
         return response()->json([
             'data' => $book,
-            'message' => 'Book successfully found'
+            'message' => 'Book successfully found',
         ]);
     }
 
@@ -37,34 +37,33 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if ($bookToUpdate) {
-
-            if ($bookToUpdate->claimed == 1) {
-                return response()->json([
-                    'message' => "Book $id is already claimed",
-                ], 400);
-            } elseif ($bookToUpdate->claimed == 0) {
-
-                $request->validate([
-                    'claimed_by_name' => 'string|min:1|required',
-                    'email' => 'string|email|required',
-                ]);
-
-                $bookToUpdate->name = $request->name;
-                $bookToUpdate->email = $request->email;
-                $bookToUpdate->claimed = 1;
-
-                if ($bookToUpdate->save()) {
-                    return response()->json([
-                        'message' => "Book $id was claimed",
-                    ]);
-                }
-            }
+        if (! $bookToUpdate) {
+            return response()->json([
+                'message' => "Book $id was not found",
+            ], 404);
         }
 
-        return response()->json([
-            'message' => "Book $id was not found",
-        ], 404);
+        if ($bookToUpdate->claimed == 1) {
+            return response()->json([
+                'message' => "Book $id is already claimed",
+            ], 400);
+        } elseif ($bookToUpdate->claimed == 0) {
+
+            $request->validate([
+                'name' => 'string|min:1|max:255|required',
+                'email' => 'string|email|max:255|required',
+            ]);
+
+            $bookToUpdate->claimed_by_name = $request->name;
+            $bookToUpdate->email = $request->email;
+            $bookToUpdate->claimed = 1;
+
+            if ($bookToUpdate->save()) {
+                return response()->json([
+                    'message' => "Book $id was claimed",
+                ]);
+            }
+        }
     }
 
     public function unclaimBook(int $id, Request $request)

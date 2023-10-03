@@ -110,13 +110,69 @@ class BookTest extends TestCase
 
     public function test_failure_getBookFromId(): void
     {
-        Review::factory()->create();
-        $response = $this->getJson("/api/books/100");
+        $response = $this->getJson('/api/books/100');
 
         $response->assertStatus(404)
             ->assertJson(function (AssertableJson $json) {
                 $json->hasAll(['message'])
-                    ->whereContains('message', "Book with id 100 not found");
+                    ->whereContains('message', 'Book with id 100 not found');
             });
+    }
+
+    public function test_claimed_noData(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->putJson("/api/books/claim/$book->id");
+
+        $response->assertStatus(422)
+            ->assertInvalid(['email', 'name'])
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
+    }
+
+    public function test_claimed_noId(): void
+    {
+        $response = $this->putJson('/api/books/claim/1');
+
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+    }
+
+    public function test_claimed_alreadyClaimed(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/claim/$book->id");
+        $response->assertStatus(400);
+
+    }
+
+    public function test_claimed_success(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->putJson("/api/books/claim/$book->id", [
+            'name' => 'name',
+            'email' => 'email@email.com',
+            'claimed' => 1,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll([
+                    'message',
+                ]);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'claimed_by_name' => 'name',
+            'email' => 'email@email.com',
+            'claimed' => 1,
+        ]);
+
     }
 }
