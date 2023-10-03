@@ -47,4 +47,20 @@ class BookTest extends TestCase
                     });
             });
     }
+
+    public function test_claimed_noData(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->putJson("/api/books/claim/$book->id");
+
+        $response->assertStatus(422);
+    }
+
+    public function test_claimed_noId(): void
+    {
+        $response = $this->putJson("/api/books/claim/1");
+
+        $response->assertStatus(404);
+    }
 }

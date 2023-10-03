@@ -45,9 +45,10 @@ class BookController extends Controller
 
         if ($bookToUpdate) {
             if ($bookToUpdate->claimed == 0) {
+
                 $request->validate([
-                    'name' => 'string|min:1',
-                    'email' => 'string|email',
+                    'name' => 'string|min:1|required',
+                    'email' => 'string|email|requiredphp',
                 ]);
 
                 $bookToUpdate->name = $request->name;
@@ -68,7 +69,7 @@ class BookController extends Controller
 
         return response()->json([
             'message' => "Book $id was not found",
-        ]);
+        ],404);
 
     }
 }
