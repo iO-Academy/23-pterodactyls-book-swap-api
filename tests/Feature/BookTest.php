@@ -108,20 +108,38 @@ class BookTest extends TestCase
             });
     }
 
+    public function test_failure_getBookFromId(): void
+    {
+        $response = $this->getJson('/api/books/100');
+
+        $response->assertStatus(404)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message'])
+                    ->whereContains('message', 'Book with id 100 not found');
+            });
+    }
+
     public function test_claimed_noData(): void
     {
         $book = Book::factory()->create();
 
         $response = $this->putJson("/api/books/claim/$book->id");
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+        ->assertInvalid(['email', 'name'])
+        ->assertJson(function(AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+        });
     }
 
     public function test_claimed_noId(): void
     {
         $response = $this->putJson('/api/books/claim/1');
 
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+        ->assertJson(function(AssertableJson $json) {
+            $json->hasAll(['message']);
+        });;
     }
 
     public function test_claimed_alreadyClaimed(): void
