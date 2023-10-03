@@ -83,7 +83,12 @@ class BookTest extends TestCase
             "claimed" => 1
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+        ->assertJson(function (AssertableJson $json) {
+            $json->hasAll([
+                'message'
+            ]);
+        });
 
         $this->assertDatabaseHas('books', [
             "name" => "name",
