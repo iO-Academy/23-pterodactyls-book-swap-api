@@ -72,4 +72,24 @@ class BookTest extends TestCase
         $response->assertStatus(400);
 
     }
+
+    public function test_claimed_success(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->putJson("/api/books/claim/$book->id", [
+            "name" => "name",
+            "email" => "email@email.com",
+            "claimed" => 1
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('books', [
+            "name" => "name",
+            "email" => "email@email.com",
+            "claimed" => 1
+        ]);
+
+    }
 }

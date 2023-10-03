@@ -44,6 +44,7 @@ class BookController extends Controller
         $bookToUpdate = Book::find($id);
 
         if ($bookToUpdate) {
+
             if($bookToUpdate->claimed == 1) {
                 return response()->json([
                     'message' => "Book $id is already claimed",
@@ -53,7 +54,7 @@ class BookController extends Controller
 
                     $request->validate([
                         'name' => 'string|min:1|required',
-                        'email' => 'string|email|requiredphp',
+                        'email' => 'string|email|required',
                     ]);
     
                     $bookToUpdate->name = $request->name;
@@ -73,11 +74,6 @@ class BookController extends Controller
         ],404);
 
     }
-
-
-
-
-
 
 
 }
