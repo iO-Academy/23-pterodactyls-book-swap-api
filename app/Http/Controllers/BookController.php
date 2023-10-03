@@ -11,25 +11,27 @@ class BookController extends Controller
     public function getAllBooks(Request $request)
     {
 
+        $request->validate([
+            'claimed' => 'integer|min:0|max:1',
+        ]);
+
         $claimed = $request->input('claimed', 0);
 
         $books = Book::with(['genre:id,name'])->where('claimed', $claimed)->get()->makeHidden(
             ['genre_id',
-            'review_id',
-            'deleted_at',
-            'deleted',
-            'email',
-            'claimed',
-            'year',
-            'page_count',
-            'claimed_by_name',
-            'updated_at',
-            'created_at',
-            'blurb'
-        ]);
+                'review_id',
+                'deleted_at',
+                'deleted',
+                'email',
+                'claimed',
+                'year',
+                'page_count',
+                'claimed_by_name',
+                'updated_at',
+                'created_at',
+                'blurb',
+            ]);
 
-
-        
         return response()->json([
             'data' => $books,
             'message' => 'Book successfully retrieved',
@@ -84,7 +86,6 @@ class BookController extends Controller
                 ]);
             }
         }
-
 
     }
 }

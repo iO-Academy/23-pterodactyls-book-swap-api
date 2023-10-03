@@ -49,6 +49,53 @@ class BookTest extends TestCase
             });
     }
 
+    public function test_getAllClaimedBooks(): void
+    {
+
+        Book::factory(['claimed' => 1])->create();
+        $response = $this->getJson('/api/books?claimed=1');
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['data', 'message'])
+                    ->has('data', 1, function (AssertableJson $json) {
+                        $json->hasAll([
+                            'id',
+                            'title',
+                            'author',
+                            'image',
+                            'genre',
+                        ])
+                            ->whereAllType([
+                                'id' => 'integer',
+                                'title' => 'string',
+                                'author' => 'string',
+                                'image' => 'string',
+                            ])
+                            ->has('genre', function (AssertableJson $json) {
+                                $json->hasAll([
+                                    'id',
+                                    'name',
+                                ])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'name' => 'string',
+                                    ]);
+                            });
+                    });
+            });
+    }
+
+    public function test_getAllBooks_invalidData(): void
+    {
+        $response = $this->getJson('/api/books?claimed=2');
+
+        $response->assertStatus(422)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
+    }
+
     public function test_success_getBookFromId(): void
     {
         Review::factory()->create();
