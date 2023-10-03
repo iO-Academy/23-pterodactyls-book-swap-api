@@ -126,10 +126,10 @@ class BookTest extends TestCase
         $response = $this->putJson("/api/books/claim/$book->id");
 
         $response->assertStatus(422)
-        ->assertInvalid(['email', 'name'])
-        ->assertJson(function(AssertableJson $json) {
-            $json->hasAll(['message', 'errors']);
-        });
+            ->assertInvalid(['email', 'name'])
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
     }
 
     public function test_claimed_noId(): void
@@ -137,9 +137,9 @@ class BookTest extends TestCase
         $response = $this->putJson('/api/books/claim/1');
 
         $response->assertStatus(404)
-        ->assertJson(function(AssertableJson $json) {
-            $json->hasAll(['message']);
-        });;
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
     }
 
     public function test_claimed_alreadyClaimed(): void
@@ -156,22 +156,22 @@ class BookTest extends TestCase
         $book = Book::factory()->create();
 
         $response = $this->putJson("/api/books/claim/$book->id", [
-            "name" => "name",
-            "email" => "email@email.com",
-            "claimed" => 1
+            'name' => 'name',
+            'email' => 'email@email.com',
+            'claimed' => 1,
         ]);
 
         $response->assertStatus(200)
-        ->assertJson(function (AssertableJson $json) {
-            $json->hasAll([
-                'message'
-            ]);
-        });
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll([
+                    'message',
+                ]);
+            });
 
         $this->assertDatabaseHas('books', [
-            "claimed_by_name" => "name",
-            "email" => "email@email.com",
-            "claimed" => 1
+            'claimed_by_name' => 'name',
+            'email' => 'email@email.com',
+            'claimed' => 1,
         ]);
 
     }

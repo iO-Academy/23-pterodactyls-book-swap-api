@@ -37,38 +37,32 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if (!$bookToUpdate) {
+        if (! $bookToUpdate) {
             return response()->json([
                 'message' => "Book $id was not found",
-            ],404);
+            ], 404);
         }
 
-            if($bookToUpdate->claimed == 1) {
+        if ($bookToUpdate->claimed == 1) {
+            return response()->json([
+                'message' => "Book $id is already claimed",
+            ], 400);
+        } elseif ($bookToUpdate->claimed == 0) {
+
+            $request->validate([
+                'name' => 'string|min:1|max:255|required',
+                'email' => 'string|email|max:255|required',
+            ]);
+
+            $bookToUpdate->claimed_by_name = $request->name;
+            $bookToUpdate->email = $request->email;
+            $bookToUpdate->claimed = 1;
+
+            if ($bookToUpdate->save()) {
                 return response()->json([
-                    'message' => "Book $id is already claimed",
-                ],400);
+                    'message' => "Book $id was claimed",
+                ]);
             }
-                elseif($bookToUpdate->claimed == 0) {
-
-                    $request->validate([
-                        'name' => 'string|min:1|max:255|required',
-                        'email' => 'string|email|max:255|required',
-                    ]);
-    
-                    $bookToUpdate->claimed_by_name = $request->name;
-                    $bookToUpdate->email = $request->email;
-                    $bookToUpdate->claimed = 1;
-    
-                    if ($bookToUpdate->save()) {
-                        return response()->json([
-                            'message' => "Book $id was claimed",
-                        ]);
-                    }
-                } 
         }
-
-       
     }
-
-
-
+}
