@@ -21,7 +21,7 @@ class BookFactory extends Factory
             'title' => $this->faker->text(20),
             'author' => $this->faker->name(),
             'image' => $this->faker->imageUrl(),
-            'genre_id' => Genre::factory()
+            'genre_id' => Genre::factory(),
         ];
     }
 }

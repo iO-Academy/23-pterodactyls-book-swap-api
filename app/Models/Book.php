@@ -10,10 +10,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Book extends Model
 {
     use HasFactory;
-
     use SoftDeletes;
 
-    public function genre(): BelongsTo 
+    public function genre(): BelongsTo
     {
         return $this->belongsTo(Genre::class);
     }
