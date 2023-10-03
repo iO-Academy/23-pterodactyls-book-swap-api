@@ -11,30 +11,24 @@ class BookController extends Controller
     public function getAllBooks()
     {
         return response()->json([
-            'data' => Book::with(['genre:id,name'])->get()->makeHidden(['genre_id', 'review_id', 'deleted_at', 'deleted', 'email', 'name', 'claimed', 'year', 'page_count', 'claimed_by_name', 'updated_at', 'created_at', 'blurb']),
-            'message' => 'Book successfully retrieved'
+            'data' => Book::with(['genre:id,name'])->get()->makeHidden(['genre_id', 'review_id', 'deleted_at', 'deleted', 'email', 'claimed', 'year', 'page_count', 'claimed_by_name', 'updated_at', 'created_at', 'blurb']),
+            'message' => 'Book successfully retrieved',
         ]);
     }
 
     public function getBookFromId(int $id)
     {
-        $book = Book::find($id);
+        $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
-                
-                "message" => "The claimed field must be a number. (and 2 more errors)",
-                "errors" =>[ 
-                    "claimed" => "The claimed field must be a number.",
-                    "genre" => "The selected genre is invalid.",
-                    "search" => "The search field must be a string." 
-                ]
-            ]);
+                'message' => "Book with id $id not found",
+            ], 404);
         }
 
         return response()->json([
-            'data' => Book::with(['genre:id,name'])->get()->makeHidden(['genre_id', 'review_id', 'deleted_at', 'deleted', 'email', 'name', 'claimed', 'year', 'page_count', 'claimed_by_name', 'updated_at', 'created_at', 'blurb']),
-            'message' => 'Book successfully retrieved'
+            'data' => $book,
+            'message' => 'Book successfully found',
         ]);
     }
 

@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('author');
             $table->boolean('claimed')->default(0);
             $table->integer('page_count')->nullable();
-            $table->string('claimed_by_name')->nullable();
             $table->string('image')->nullable();
             $table->year('year')->nullable();
             $table->string('blurb')->nullable();
             $table->string('email')->nullable();
+            $table->string('claimed_by_name')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
