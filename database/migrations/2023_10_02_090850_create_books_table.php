@@ -22,7 +22,6 @@ return new class extends Migration
             $table->year('year')->nullable();
             $table->string('blurb')->nullable();
             $table->string('email')->nullable();
-            $table->string('name')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

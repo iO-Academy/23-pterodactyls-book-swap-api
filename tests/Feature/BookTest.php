@@ -91,7 +91,7 @@ class BookTest extends TestCase
         });
 
         $this->assertDatabaseHas('books', [
-            "name" => "name",
+            "claimed_by_name" => "name",
             "email" => "email@email.com",
             "claimed" => 1
         ]);

@@ -57,7 +57,7 @@ class BookController extends Controller
                         'email' => 'string|email|required',
                     ]);
     
-                    $bookToUpdate->name = $request->name;
+                    $bookToUpdate->claimed_by_name = $request->name;
                     $bookToUpdate->email = $request->email;
                     $bookToUpdate->claimed = 1;
     

@@ -23,7 +23,7 @@ class BookFactory extends Factory
             'image' => $this->faker->imageUrl(),
             'genre_id' => Genre::factory(),
             'claimed' => 0,
-            'name' => $this->faker->name(),
+            'claimed_by_name' => $this->faker->name(),
             'email' => $this->faker->email(),
         ];
     }
