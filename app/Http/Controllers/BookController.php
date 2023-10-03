@@ -28,7 +28,7 @@ class BookController extends Controller
 
         return response()->json([
             'data' => $book,
-            'message' => 'Book successfully retrieved'
+            'message' => 'Book successfully found'
         ]);
     }
 
