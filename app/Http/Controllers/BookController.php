@@ -8,10 +8,30 @@ use Illuminate\Http\Request;
 class BookController extends Controller
 {
     //
-    public function getAllBooks()
+    public function getAllBooks(Request $request)
     {
+
+        $claimed = $request->input('claimed', 0);
+
+        $books = Book::with(['genre:id,name'])->where('claimed', $claimed)->get()->makeHidden(
+            ['genre_id',
+            'review_id',
+            'deleted_at',
+            'deleted',
+            'email',
+            'claimed',
+            'year',
+            'page_count',
+            'claimed_by_name',
+            'updated_at',
+            'created_at',
+            'blurb'
+        ]);
+
+
+        
         return response()->json([
-            'data' => Book::with(['genre:id,name'])->get()->makeHidden(['genre_id', 'review_id', 'deleted_at', 'deleted', 'email', 'claimed', 'year', 'page_count', 'claimed_by_name', 'updated_at', 'created_at', 'blurb']),
+            'data' => $books,
             'message' => 'Book successfully retrieved',
         ]);
     }
@@ -64,5 +84,7 @@ class BookController extends Controller
                 ]);
             }
         }
+
+
     }
 }
