@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
-
     protected $hidden = ['book_id'];
 
     use HasFactory;

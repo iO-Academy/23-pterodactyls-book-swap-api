@@ -110,12 +110,12 @@ class BookTest extends TestCase
 
     public function test_failure_getBookFromId(): void
     {
-        $response = $this->getJson("/api/books/100");
+        $response = $this->getJson('/api/books/100');
 
         $response->assertStatus(404)
             ->assertJson(function (AssertableJson $json) {
                 $json->hasAll(['message'])
-                    ->whereContains('message', "Book with id 100 not found");
+                    ->whereContains('message', 'Book with id 100 not found');
             });
     }
 }
