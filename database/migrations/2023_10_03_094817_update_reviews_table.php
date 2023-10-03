@@ -16,12 +16,8 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
 
         Schema::table('reviews', function (Blueprint $table) {
             $table->dropColumn('book_id');
