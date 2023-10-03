@@ -59,8 +59,17 @@ class BookTest extends TestCase
 
     public function test_claimed_noId(): void
     {
-        $response = $this->putJson("/api/books/claim/1");
+        $response = $this->putJson('/api/books/claim/1');
 
         $response->assertStatus(404);
+    }
+
+    public function test_claimed_alreadyClaimed(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/claim/$book->id");
+        $response->assertStatus(400);
+
     }
 }
