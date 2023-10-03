@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
-use App\Models\Genre;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
