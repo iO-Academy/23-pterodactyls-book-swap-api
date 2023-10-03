@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
@@ -30,4 +31,43 @@ class BookController extends Controller
             'message' => 'Book successfully retrieved'
         ]);
     }
+
+    public function claimBook(int $id, Request $request)
+    {
+
+        $bookToUpdate = Book::find($id);
+
+        if ($bookToUpdate) {
+
+            if($bookToUpdate->claimed == 1) {
+                return response()->json([
+                    'message' => "Book $id is already claimed",
+                ],400);
+            }
+                elseif($bookToUpdate->claimed == 0) {
+
+                    $request->validate([
+                        'name' => 'string|min:1|required',
+                        'email' => 'string|email|required',
+                    ]);
+    
+                    $bookToUpdate->name = $request->name;
+                    $bookToUpdate->email = $request->email;
+                    $bookToUpdate->claimed = 1;
+    
+                    if ($bookToUpdate->save()) {
+                        return response()->json([
+                            'message' => "Book $id was claimed",
+                        ]);
+                    }
+                } 
+        }
+
+        return response()->json([
+            'message' => "Book $id was not found",
+        ],404);
+
+    }
+
+
 }
