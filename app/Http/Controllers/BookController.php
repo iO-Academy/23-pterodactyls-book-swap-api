@@ -66,4 +66,39 @@ class BookController extends Controller
             'message' => "Book $id was not found",
         ], 404);
     }
+
+    public function unclaimBook(int $id, Request $request)
+    {
+
+        $bookToUpdate = Book::find($id);
+
+        if ($bookToUpdate) {
+
+            if ($bookToUpdate->claimed == 0) {
+                return response()->json([
+                    'message' => "Book $id is not currently claimed",
+                ], 400);
+            } elseif ($bookToUpdate->claimed == 1) {
+
+                $request->validate([
+                    'claimed_by_name' => 'string|min:1|required',
+                    'email' => 'string|email|required',
+                ]);
+
+                $bookToUpdate->name = $request->name;
+                $bookToUpdate->email = $request->email;
+                $bookToUpdate->claimed = 0;
+
+                if ($bookToUpdate->save()) {
+                    return response()->json([
+                        'message' => "Book $id was returned",
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => "Book $id was not found",
+        ], 404);
+    } 
 }
