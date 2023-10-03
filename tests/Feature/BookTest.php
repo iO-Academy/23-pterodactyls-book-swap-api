@@ -90,7 +90,7 @@ class BookTest extends TestCase
                                         'name' => 'string',
                                     ]);
                             })
-                            ->has('reviews', function (AssertableJson $json) {
+                            ->has('reviews', 1, function (AssertableJson $json) {
                                 $json->hasAll([
                                     'id',
                                     'name',
