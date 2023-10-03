@@ -20,7 +20,7 @@ class BookController extends Controller
     {
         $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
 
-        if (! $book) {
+        if (!$book) {
             return response()->json([
                 'message' => "Book with id $id not found",
             ], 404);
@@ -37,7 +37,7 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if (! $bookToUpdate) {
+        if (!$bookToUpdate) {
             return response()->json([
                 'message' => "Book $id was not found",
             ], 404);
@@ -66,13 +66,12 @@ class BookController extends Controller
         }
     }
 
-    public function unclaimBook(int $id, Request $request)
+    public function returnBook(int $id, Request $request)
     {
 
         $bookToUpdate = Book::find($id);
 
         if ($bookToUpdate) {
-
             if ($bookToUpdate->claimed == 0) {
                 return response()->json([
                     'message' => "Book $id is not currently claimed",
@@ -80,12 +79,10 @@ class BookController extends Controller
             } elseif ($bookToUpdate->claimed == 1) {
 
                 $request->validate([
-                    'claimed_by_name' => 'string|min:1|required',
-                    'email' => 'string|email|required',
+                    'email' => 'string|email|max:255|required',
                 ]);
 
-                $bookToUpdate->name = $request->name;
-                $bookToUpdate->email = $request->email;
+                $bookToUpdate->email = "";
                 $bookToUpdate->claimed = 0;
 
                 if ($bookToUpdate->save()) {
@@ -99,5 +96,5 @@ class BookController extends Controller
         return response()->json([
             'message' => "Book $id was not found",
         ], 404);
-    } 
+    }
 }
