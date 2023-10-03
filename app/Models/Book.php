@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Book extends Model
 {
 
-    protected $hidden = ['deleted_at', 'created_at', 'updated_at', 'email', 'name', 'genre_id', 'claimed'];
+    protected $hidden = ['deleted_at', 'created_at', 'updated_at', 'email', 'genre_id', 'claimed'];
 
     use HasFactory;
     use SoftDeletes;

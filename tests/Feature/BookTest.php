@@ -63,7 +63,7 @@ class BookTest extends TestCase
                             'title',
                             'author',
                             'blurb',
-                            'claimed_by_name',
+                            'name',
                             'image',
                             'page_count',
                             'year',
@@ -76,7 +76,7 @@ class BookTest extends TestCase
                                 'author' => 'string',
                                 'image' => 'string',
                                 'blurb' => 'string',
-                                'claimed_by_name' => 'string',
+                                'name' => 'string',
                                 'page_count' => 'integer',
                                 'year' => 'integer',
                             ])
