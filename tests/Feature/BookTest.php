@@ -220,9 +220,7 @@ class BookTest extends TestCase
         $response = $this->putJson("/api/books/return/$book->id", ['email' => $book->email]);
         $response->assertStatus(400)
             ->assertJson(function (AssertableJson $json) {
-                $json->hasAll([
-                    'message',
-                ]);
+                $json->hasAll(['message']);
             });
     }
 

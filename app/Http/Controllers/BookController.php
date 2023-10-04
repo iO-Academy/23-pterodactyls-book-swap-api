@@ -94,6 +94,7 @@ class BookController extends Controller
             }
 
             $bookToUpdate->email = "";
+            $bookToUpdate->claimed_by_name = "";
             $bookToUpdate->claimed = 0;
 
             if ($bookToUpdate->save()) {
@@ -101,6 +102,13 @@ class BookController extends Controller
                     'message' => "Book $id was returned",
                 ]);
             }
+
+            return response()->json([
+                "message" => "Book $id was not able to be returned"
+            ], 500);
         }
+        return response()->json([
+            "message" => "Book $id was not able to be returned"
+        ], 500);
     }
 }
