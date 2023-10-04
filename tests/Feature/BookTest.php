@@ -51,7 +51,7 @@ class BookTest extends TestCase
 
     public function test_getAllClaimedBooks(): void
     {
-
+        Book::factory()->create();
         Book::factory(['claimed' => 1])->create();
         $response = $this->getJson('/api/books?claimed=1');
 
