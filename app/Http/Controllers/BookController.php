@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -92,6 +93,29 @@ class BookController extends Controller
                     'message' => "Book $id was claimed",
                 ]);
             }
+        }
+
+    }
+
+    public function addReview(Request $request)
+    {
+        $request->validate([
+            'name' => 'string|required|min:1|max:255',
+            'rating' => 'integer|min:0|max:5|required',
+            'review' => 'required|string|min:3|max:500',
+            'book_id' => 'required|integer|exists:books,id'
+        ]);
+
+        $newReview = new Review();
+        $newReview->name = $request->name;
+        $newReview->rating = $request->rating;
+        $newReview->review = $request->review;
+        $newReview->book_id = $request->book_id;
+
+        if($newReview->save()) {
+            return response()->json([
+                'message' => 'Review created'
+            ],201);
         }
 
     }
