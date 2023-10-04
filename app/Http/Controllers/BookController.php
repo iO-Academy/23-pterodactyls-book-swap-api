@@ -49,7 +49,7 @@ class BookController extends Controller
     {
         $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
 
-        if (! $book) {
+        if (!$book) {
             return response()->json([
                 'message' => "Book with id $id not found",
             ], 404);
@@ -66,7 +66,7 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if (! $bookToUpdate) {
+        if (!$bookToUpdate) {
             return response()->json([
                 'message' => "Book $id was not found",
             ], 404);
@@ -94,5 +94,51 @@ class BookController extends Controller
             }
         }
 
+    }
+
+    public function returnBook(int $id, Request $request)
+    {
+
+        $bookToUpdate = Book::find($id);
+
+        if (!$bookToUpdate) {
+            return response()->json([
+                'message' => "Book $id was not found",
+            ], 404);
+        }
+
+        $request->validate([
+            'email' => 'string|email|max:255|required'
+        ]);
+
+        if ($bookToUpdate->claimed == 0) {
+            return response()->json([
+                'message' => "Book $id is not currently claimed",
+            ], 400);
+        } elseif ($bookToUpdate->claimed == 1) {
+
+            if ($bookToUpdate->email != $request->email) {
+                return response()->json([
+                    'message' => "Book $id was not returned. $request->email did not claim this book."
+                ], 400);
+            }
+
+            $bookToUpdate->email = "";
+            $bookToUpdate->claimed_by_name = "";
+            $bookToUpdate->claimed = 0;
+
+            if ($bookToUpdate->save()) {
+                return response()->json([
+                    'message' => "Book $id was returned",
+                ]);
+            }
+
+            return response()->json([
+                "message" => "Book $id was not able to be returned"
+            ], 500);
+        }
+        return response()->json([
+            "message" => "Book $id was not able to be returned"
+        ], 500);
     }
 }

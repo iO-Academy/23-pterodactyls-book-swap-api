@@ -24,6 +24,7 @@ Route::controller(BookController::class)->group(function () {
     Route::get('/books', 'getAllBooks');
     Route::get('/books/{id}', 'getBookFromId');
     Route::put('/books/claim/{id}', 'claimBook');
+    Route::put('/books/return/{id}', 'returnBook');
 });
 
 Route::post('/reviews', [ReviewController::class, 'addReview']);

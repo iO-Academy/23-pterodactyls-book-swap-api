@@ -8,6 +8,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
+use function PHPUnit\Framework\assertJson;
+
 class BookTest extends TestCase
 {
     use DatabaseMigrations;
@@ -195,7 +197,6 @@ class BookTest extends TestCase
 
         $response = $this->putJson("/api/books/claim/$book->id");
         $response->assertStatus(400);
-
     }
 
     public function test_claimed_success(): void
@@ -220,6 +221,71 @@ class BookTest extends TestCase
             'email' => 'email@email.com',
             'claimed' => 1,
         ]);
+    }
 
+    public function test_return_noEmail(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/return/$book->id");
+
+        $response->assertStatus(422)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
+    }
+
+    public function test_return_invalidEmail(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => 'invalid']);
+
+        $response->assertStatus(422)
+            ->assertInvalid(['email'])
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
+    }
+
+    public function test_return_wrongEmail(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => "wrong@hello.com"]);
+
+        $response->assertStatus(400)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+    }
+
+    public function test_return_alreadyUnclaim(): void
+    {
+        $book = Book::factory(['claimed' => 0])->create();
+
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => $book->email]);
+        $response->assertStatus(400)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+    }
+
+    public function test_return_success(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => $book->email]);
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll([
+                    'message',
+                ]);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'claimed' => 0,
+        ]);
     }
 }
