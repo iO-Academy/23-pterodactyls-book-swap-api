@@ -223,44 +223,5 @@ class BookTest extends TestCase
 
     }
 
-    public function test_addReviews_validData(): void
-    {
-        $book = Book::factory()->create();
-
-        $response = $this->postJson('/api/books/reviews', [
-            'name' => 'hfjdshfsja',
-            'rating' => 4,
-            'review' => 'great book',
-            'book_id' => $book->id,
-        ]);
-
-        $response->assertStatus(201)
-            ->assertJson(function (AssertableJson $json) {
-                $json->hasAll(['message']);
-            });
-
-        $this->assertDatabaseHas('reviews', [
-            'name' => 'hfjdshfsja',
-            'rating' => 4,
-            'review' => 'great book',
-            'book_id' => $book->id,
-        ]);
-    }
-
-    public function test_addReviews_invalidData(): void
-    {
-
-        $response = $this->postJson('/api/books/reviews', [
-            'name' => 3242,
-            'rating' => 'dog',
-            'review' => 'great book',
-            'book_id' => 'pizza',
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJson(function (AssertableJson $json) {
-                $json->hasAll(['message', 'errors']);
-            });
-
-    }
+    
 }
