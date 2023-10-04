@@ -10,40 +10,40 @@ class BookController extends Controller
     //
     public function getAllBooks(Request $request)
     {
-        
+
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
         ]);
 
         $hidden = ['genre_id',
-        'review_id',
-        'deleted_at',
-        'deleted',
-        'email',
-        'claimed',
-        'year',
-        'page_count',
-        'claimed_by_name',
-        'updated_at',
-        'created_at',
-        'blurb',
-    ];
+            'review_id',
+            'deleted_at',
+            'deleted',
+            'email',
+            'claimed',
+            'year',
+            'page_count',
+            'claimed_by_name',
+            'updated_at',
+            'created_at',
+            'blurb',
+        ];
 
         $claimed = $request->claimed;
-        if($claimed !== null) {
-        $books = Book::with(['genre:id,name'])->where('claimed', $claimed)->get()->makeHidden($hidden);
+        if ($claimed !== null) {
+            $books = Book::with(['genre:id,name'])->where('claimed', $claimed)->get()->makeHidden($hidden);
+
+            return response()->json([
+                'data' => $books,
+                'message' => 'Book successfully retrieved',
+            ]);
+        } $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
 
         return response()->json([
             'data' => $books,
             'message' => 'Book successfully retrieved',
         ]);
-    } $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
-
-    return response()->json([
-        'data' => $books,
-        'message' => 'Book successfully retrieved',
-    ]);
-}
+    }
 
     public function getBookFromId(int $id)
     {
