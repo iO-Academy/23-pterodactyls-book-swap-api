@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Book;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -16,7 +14,7 @@ class ReviewTest extends TestCase
     public function test_addReviews_validData(): void
     {
         $book = Book::factory()->create();
-        $name ='hfjdshfsja';
+        $name = 'hfjdshfsja';
         $rating = 4;
         $review = 'great book';
 
@@ -51,12 +49,12 @@ class ReviewTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-        ->assertInvalid([
-            'name', 
-            'rating', 
-            'review', 
-            'book_id'
-        ]);
+            ->assertInvalid([
+                'name',
+                'rating',
+                'review',
+                'book_id',
+            ]);
     }
 
     public function test_addReviews_noData(): void
@@ -70,11 +68,11 @@ class ReviewTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-        ->assertInvalid([
-            'name', 
-            'rating', 
-            'review', 
-            'book_id'
-        ]);
+            ->assertInvalid([
+                'name',
+                'rating',
+                'review',
+                'book_id',
+            ]);
     }
 }
