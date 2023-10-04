@@ -52,7 +52,7 @@ class BookTest extends TestCase
     public function test_getAllGenreBooks(): void
     {
         $book = Book::factory()->create();
-        $response = $this->getJson('/api/books?genre='.$book->genre_id);
+        $response = $this->getJson('/api/books?genre=' . $book->genre_id);
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
@@ -144,9 +144,8 @@ class BookTest extends TestCase
 
     public function test_getAllBooks_genreAndClaimed(): void
     {
-        Book::factory()->create();
-        Book::factory(['genre_id' => 1, 'claimed' => 1])->create();
-        $response = $this->getJson('/api/books?genre=1&claimed=1');
+        $book = Book::factory(['claimed' => 1])->create();
+        $response = $this->getJson("/api/books?genre=" . $book->genre_id . "&claimed=1");
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
