@@ -12,7 +12,7 @@ class BookTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function test_getAllBooks(): void
+    public function test_blankSearch_getAllBooks(): void
     {
 
         Book::factory()->create();
@@ -46,6 +46,52 @@ class BookTest extends TestCase
                                     ]);
                             });
                     });
+            });
+    }
+
+    public function test_getAllGenreBooks(): void
+    {
+        Book::factory(['genre_id' => 2])->create();
+        $response = $this->getJson('/api/books?genre=2');
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['data', 'message'])
+                    ->has('data', 1, function (AssertableJson $json) {
+                        $json->hasAll([
+                            'id',
+                            'title',
+                            'author',
+                            'image',
+                            'genre',
+                        ])
+                            ->whereAllType([
+                                'id' => 'integer',
+                                'title' => 'string',
+                                'author' => 'string',
+                                'image' => 'string',
+                            ])
+                            ->has('genre', function (AssertableJson $json) {
+                                $json->hasAll([
+                                    'id',
+                                    'name',
+                                ])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'name' => 'string',
+                                    ]);
+                            });
+                    });
+            });
+    }
+
+    public function test_getAllBooks_invalidGenre(): void
+    {
+        $response = $this->getJson('/api/books?genre=5');
+
+        $response->assertStatus(422)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
             });
     }
 
@@ -93,6 +139,43 @@ class BookTest extends TestCase
         $response->assertStatus(422)
             ->assertJson(function (AssertableJson $json) {
                 $json->hasAll(['message', 'errors']);
+            });
+    }
+
+    public function test_getAllBooks_genreAndClaimed(): void
+    {
+        Book::factory()->create();
+        Book::factory(['genre_id' => 1, 'claimed' => 1])->create();
+        $response = $this->getJson('/api/books?genre=1&claimed=1');
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['data', 'message'])
+                    ->has('data', 1, function (AssertableJson $json) {
+                        $json->hasAll([
+                            'id',
+                            'title',
+                            'author',
+                            'image',
+                            'genre',
+                        ])
+                            ->whereAllType([
+                                'id' => 'integer',
+                                'title' => 'string',
+                                'author' => 'string',
+                                'image' => 'string',
+                            ])
+                            ->has('genre', function (AssertableJson $json) {
+                                $json->hasAll([
+                                    'id',
+                                    'name',
+                                ])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'name' => 'string',
+                                    ]);
+                            });
+                    });
             });
     }
 

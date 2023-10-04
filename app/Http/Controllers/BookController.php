@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Genre;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -16,7 +17,7 @@ class BookController extends Controller
             'genre' => 'integer|min:1|max:4'
         ]);
 
-        $hidden = ['genre_id',
+        $hidden = [
             'review_id',
             'deleted_at',
             'deleted',
@@ -31,14 +32,17 @@ class BookController extends Controller
         ];
 
         $claimed = $request->claimed;
-        if ($claimed !== null) {
-            $books = Book::with(['genre:id,name'])->where('claimed', $claimed)->get()->makeHidden($hidden);
+        $genre = $request->genre;
 
-            return response()->json([
-                'data' => $books,
-                'message' => 'Book successfully retrieved',
-            ]);
-        } $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
+        $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
+
+        if ($claimed) {
+            $books = $books->where('claimed', $claimed);
+        }
+
+        if ($genre) {
+            $books = $books->where('genre_id', $genre);
+        }
 
         return response()->json([
             'data' => $books,
@@ -94,7 +98,6 @@ class BookController extends Controller
                 ]);
             }
         }
-
     }
 
     public function returnBook(int $id, Request $request)
