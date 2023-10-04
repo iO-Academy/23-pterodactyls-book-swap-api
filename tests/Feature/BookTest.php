@@ -239,6 +239,12 @@ class BookTest extends TestCase
                 $json->hasAll(['message']);
             });
 
+        $this->assertDatabaseHas('reviews', [
+            'name' => 'hfjdshfsja',
+            'rating' => 4,
+            'review' => 'great book',
+            'book_id' => $book->id,
+        ]);
     }
 
     public function test_addReviews_invalidData(): void
