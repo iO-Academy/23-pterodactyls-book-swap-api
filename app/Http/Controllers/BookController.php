@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
-use App\Models\Genre;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -14,7 +13,7 @@ class BookController extends Controller
 
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
-            'genre' => 'integer|min:1|max:4'
+            'genre' => 'integer|min:1|max:4',
         ]);
 
         $hidden = [
@@ -54,7 +53,7 @@ class BookController extends Controller
     {
         $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => "Book with id $id not found",
             ], 404);
@@ -71,7 +70,7 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if (!$bookToUpdate) {
+        if (! $bookToUpdate) {
             return response()->json([
                 'message' => "Book $id was not found",
             ], 404);
@@ -116,7 +115,7 @@ class BookController extends Controller
                     'email' => 'string|email|max:255|required',
                 ]);
 
-                $bookToUpdate->email = "";
+                $bookToUpdate->email = '';
                 $bookToUpdate->claimed = 0;
 
                 if ($bookToUpdate->save()) {
