@@ -13,6 +13,7 @@ class BookController extends Controller
 
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
+            'genre' => 'integer|min:1|max:4'
         ]);
 
         $hidden = ['genre_id',
