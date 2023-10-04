@@ -346,4 +346,92 @@ class BookTest extends TestCase
             'claimed' => 0,
         ]);
     }
+
+    public function test_getAllBooks_SearchAndGenreAndClaid(): void
+    {
+        $book1 = Book::factory(['claimed' => 1])->create();
+        $book2 = Book::factory(['claimed' => 1])->create();
+        $book3 = Book::factory(['claimed' => 0])->create();
+
+        $response = $this->getJson("/api/books?genre=" .
+        $book1->genre_id .
+        "&claimed=1&search=" .
+        $book1->title .
+        "&" .
+        $book1->author .
+        "&" .
+        $book1->blurb
+    );
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['data', 'message'])
+                    ->has('data', 1, function (AssertableJson $json) {
+                        $json->hasAll([
+                            'id',
+                            'title',
+                            'author',
+                            'image',
+                            'genre',
+                        ])
+                            ->whereAllType([
+                                'id' => 'integer',
+                                'title' => 'string',
+                                'author' => 'string',
+                                'image' => 'string',
+                            ])
+                            ->has('genre', function (AssertableJson $json) {
+                                $json->hasAll([
+                                    'id',
+                                    'name',
+                                ])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'name' => 'string',
+                                    ]);
+                            });
+                    });
+            });
+    }
+
+    public function test_getAllBooks_Search(): void
+    {
+        $book1 = Book::factory(['claimed' => 1])->create();
+        $book2 = Book::factory(['claimed' => 1])->create();
+        $book3 = Book::factory(['claimed' => 0])->create();
+
+        $response = $this->getJson("/api/books?search=" . $book1->title 
+    );
+
+        $response->assertStatus(200)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['data', 'message'])
+                    ->has('data', 1, function (AssertableJson $json) {
+                        $json->hasAll([
+                            'id',
+                            'title',
+                            'author',
+                            'image',
+                            'genre',
+                        ])
+                            ->whereAllType([
+                                'id' => 'integer',
+                                'title' => 'string',
+                                'author' => 'string',
+                                'image' => 'string',
+                            ])
+                            ->has('genre', function (AssertableJson $json) {
+                                $json->hasAll([
+                                    'id',
+                                    'name',
+                                ])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'name' => 'string',
+                                    ]);
+                            });
+                    });
+            });
+    }
+
 }
