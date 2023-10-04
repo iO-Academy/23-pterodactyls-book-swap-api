@@ -13,23 +13,27 @@ class BookController extends Controller
 
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
-            'genre' => 'integer|exists:genres,id',
+            'genre' => 'integer|min:1|max:4',
         ]);
 
-        $hidden =
-            [
-                'review_id',
-                'deleted',
-                'year',
-                'page_count',
-                'claimed_by_name',
-                'blurb',
-            ];
+        $hidden = [
+            'review_id',
+            'deleted_at',
+            'deleted',
+            'email',
+            'claimed',
+            'year',
+            'page_count',
+            'claimed_by_name',
+            'updated_at',
+            'created_at',
+            'blurb',
+        ];
 
         $claimed = $request->claimed;
         $genre = $request->genre;
 
-        $books = Book::with(['genre:id,name']);
+        $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
 
         if ($claimed) {
             $books = $books->where('claimed', $claimed);
@@ -40,7 +44,7 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'data' => $books->get()->makeHidden($hidden),
+            'data' => $books,
             'message' => 'Book successfully retrieved',
         ]);
     }
@@ -125,5 +129,17 @@ class BookController extends Controller
         return response()->json([
             'message' => "Book $id was not found",
         ], 404);
+    }
+
+    public function addBook(Request $request): void
+    {
+        $request->validate([
+            'title' => 'required|string|min:1|max:255',
+            'author' => 'required|string|min:1|max:255',
+            'genre' => 'required|integer|exists:genres,id',
+            'blurb' => 'string|min:0|max:500',
+            'image' => 'string|min:0|max:225',
+            'year' => 'integer|min:0|max:2025',
+        ]);
     }
 }
