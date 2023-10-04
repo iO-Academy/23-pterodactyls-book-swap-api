@@ -14,6 +14,7 @@ class BookController extends Controller
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
             'genre' => 'integer|exists:genres,id',
+            'search' => 'string|max:500'
         ]);
 
         $hidden =
@@ -28,6 +29,7 @@ class BookController extends Controller
 
         $claimed = $request->claimed;
         $genre = $request->genre;
+        $search = $request->search;
 
         $books = Book::with(['genre:id,name']);
 
@@ -37,6 +39,12 @@ class BookController extends Controller
 
         if ($genre) {
             $books = $books->where('genre_id', $genre);
+        }
+
+        if($search) {
+            $books = $books->where('title', 'LIKE', '%' . $search . '%')
+                ->orWhere('author', 'LIKE', '%' . $search . '%')
+                ->orWhere('blurb', 'LIKE', '%' . $search . '%');
         }
 
         return response()->json([
