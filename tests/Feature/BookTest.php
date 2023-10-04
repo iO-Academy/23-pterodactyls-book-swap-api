@@ -53,7 +53,7 @@ class BookTest extends TestCase
     {
         $book1 = Book::factory()->create();
         $book2 = Book::factory()->create();
-        $response = $this->getJson('/api/books?genre=' . $book1->genre_id);
+        $response = $this->getJson('/api/books?genre='.$book1->genre_id);
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
@@ -150,7 +150,7 @@ class BookTest extends TestCase
         $book1 = Book::factory(['claimed' => 1])->create();
         $book2 = Book::factory(['claimed' => 1])->create();
         $book3 = Book::factory(['claimed' => 0])->create();
-        $response = $this->getJson("/api/books?genre=" . $book1->genre_id . "&claimed=1");
+        $response = $this->getJson('/api/books?genre='.$book1->genre_id.'&claimed=1');
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
@@ -353,15 +353,15 @@ class BookTest extends TestCase
         $book2 = Book::factory(['claimed' => 1])->create();
         $book3 = Book::factory(['claimed' => 0])->create();
 
-        $response = $this->getJson("/api/books?genre=" .
-        $book1->genre_id .
-        "&claimed=1&search=" .
-        $book1->title .
-        "&" .
-        $book1->author .
-        "&" .
+        $response = $this->getJson('/api/books?genre='.
+        $book1->genre_id.
+        '&claimed=1&search='.
+        $book1->title.
+        '&'.
+        $book1->author.
+        '&'.
         $book1->blurb
-    );
+        );
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
@@ -400,8 +400,8 @@ class BookTest extends TestCase
         $book2 = Book::factory(['claimed' => 1])->create();
         $book3 = Book::factory(['claimed' => 0])->create();
 
-        $response = $this->getJson("/api/books?search=" . $book1->title 
-    );
+        $response = $this->getJson('/api/books?search='.$book1->title
+        );
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
@@ -433,5 +433,4 @@ class BookTest extends TestCase
                     });
             });
     }
-
 }
