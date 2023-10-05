@@ -347,7 +347,7 @@ class BookTest extends TestCase
         ]);
     }
 
-    public function test_getAllBooks_SearchAndGenreAndClaid(): void
+    public function test_getAllBooks_SearchAndGenreAndClaim(): void
     {
         $book1 = Book::factory(['claimed' => 1])->create();
         $book2 = Book::factory(['claimed' => 1])->create();
@@ -356,11 +356,7 @@ class BookTest extends TestCase
         $response = $this->getJson('/api/books?genre='.
         $book1->genre_id.
         '&claimed=1&search='.
-        $book1->title.
-        '&'.
-        $book1->author.
-        '&'.
-        $book1->blurb
+        $book1->title
         );
 
         $response->assertStatus(200)
@@ -400,8 +396,7 @@ class BookTest extends TestCase
         $book2 = Book::factory(['claimed' => 1])->create();
         $book3 = Book::factory(['claimed' => 0])->create();
 
-        $response = $this->getJson('/api/books?search='.$book1->title
-        );
+        $response = $this->getJson('/api/books?search='.$book1->title);
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
