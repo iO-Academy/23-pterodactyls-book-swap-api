@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
+use App\Models\Genre;
 use App\Models\Review;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
+
+use function PHPUnit\Framework\assertJson;
 
 class BookTest extends TestCase
 {
@@ -315,6 +318,18 @@ class BookTest extends TestCase
         $response = $this->putJson("/api/books/return/$book->id");
 
         $response->assertStatus(422)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'errors']);
+            });
+    }
+
+    public function test_return_invalidEmail(): void
+    {
+        $book = Book::factory(['claimed' => 1])->create();
+
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => 'invalid']);
+
+        $response->assertStatus(422)
             ->assertInvalid(['email'])
             ->assertJson(function (AssertableJson $json) {
                 $json->hasAll(['message', 'errors']);
@@ -325,15 +340,18 @@ class BookTest extends TestCase
     {
         $book = Book::factory(['claimed' => 0])->create();
 
-        $response = $this->putJson("/api/books/return/$book->id");
-        $response->assertStatus(400);
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => $book->email]);
+        $response->assertStatus(400)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
     }
 
     public function test_return_success(): void
     {
         $book = Book::factory(['claimed' => 1])->create();
 
-        $response = $this->putJson("/api/books/return/$book->id?email=$book->email");
+        $response = $this->putJson("/api/books/return/$book->id", ['email' => $book->email]);
 
         $response->assertStatus(200)
             ->assertJson(function (AssertableJson $json) {
@@ -345,5 +363,76 @@ class BookTest extends TestCase
         $this->assertDatabaseHas('books', [
             'claimed' => 0,
         ]);
+    }
+    // ------------------------------------------------------------------------
+
+    public function test_addBook_validData(): void
+    {
+
+        $genre = Genre::factory()->create();
+
+        $response = $this->postJson('/api/books/', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+            'blurb' => "test",
+            'image' => "url",
+            'year' => 2001,
+        ]);
+
+
+        $response->assertStatus(201)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+            'blurb' => "test",
+            'image' => "url",
+            'year' => 2001,
+        ]);
+    }
+
+    public function test_addBook_invalidData(): void
+    {
+        $response = $this->postJson('/api/books/', [
+            'title' => 123,
+            'author' => 123,
+            'genre_id' => 5,
+            'blurb' => 123,
+            'image' => 5,
+            'year' =>  2040,
+
+        ]);
+
+        $response->assertStatus(422)
+            ->assertInvalid([
+                'title',
+                'author',
+                'genre_id',
+                'blurb',
+                'image',
+                'year'
+            ]);
+    }
+
+    public function test_addBook_noData(): void
+    {
+
+        $response = $this->postJson('/api/books/', [
+            'title' => '',
+            'author' => '',
+            'genre_id' => '',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertInvalid([
+                'title',
+                'author',
+                'genre_id'
+            ]);
     }
 }
