@@ -360,9 +360,9 @@ class BookTest extends TestCase
         );
 
         $response->assertStatus(200)
-            ->assertJson(function (AssertableJson $json) {
+            ->assertJson(function (AssertableJson $json)use($book1){
                 $json->hasAll(['data', 'message'])
-                    ->has('data', 1, function (AssertableJson $json) {
+                    ->has('data', 1, function (AssertableJson $json) use($book1){
                         $json->hasAll([
                             'id',
                             'title',
@@ -376,6 +376,7 @@ class BookTest extends TestCase
                                 'author' => 'string',
                                 'image' => 'string',
                             ])
+                            ->where('id', $book1->id)
                             ->has('genre', function (AssertableJson $json) {
                                 $json->hasAll([
                                     'id',
@@ -399,9 +400,9 @@ class BookTest extends TestCase
         $response = $this->getJson('/api/books?search='.$book1->title);
 
         $response->assertStatus(200)
-            ->assertJson(function (AssertableJson $json) {
+            ->assertJson(function (AssertableJson $json)use($book1){
                 $json->hasAll(['data', 'message'])
-                    ->has('data', 1, function (AssertableJson $json) {
+                    ->has('data', 1, function (AssertableJson $json) use ($book1){
                         $json->hasAll([
                             'id',
                             'title',
@@ -415,6 +416,7 @@ class BookTest extends TestCase
                                 'author' => 'string',
                                 'image' => 'string',
                             ])
+                            ->where('id', $book1->id)
                             ->has('genre', function (AssertableJson $json) {
                                 $json->hasAll([
                                     'id',
