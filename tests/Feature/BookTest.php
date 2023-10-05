@@ -396,6 +396,31 @@ class BookTest extends TestCase
         ]);
     }
 
+    public function test_addBook_validDataRequiredOnly(): void
+    {
+
+        $genre = Genre::factory()->create();
+
+        $response = $this->postJson('/api/books/', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+            
+        ]);
+
+
+        $response->assertStatus(201)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+        ]);
+    }
+
     public function test_addBook_invalidData(): void
     {
         $response = $this->postJson('/api/books/', [
