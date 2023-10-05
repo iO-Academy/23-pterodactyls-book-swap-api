@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
+use App\Models\Genre;
 use App\Models\Review;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -362,5 +363,101 @@ class BookTest extends TestCase
         $this->assertDatabaseHas('books', [
             'claimed' => 0,
         ]);
+    }
+    // ------------------------------------------------------------------------
+
+    public function test_addBook_validData(): void
+    {
+
+        $genre = Genre::factory()->create();
+
+        $response = $this->postJson('/api/books/', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+            'blurb' => "test",
+            'image' => "url",
+            'year' => 2001,
+        ]);
+
+
+        $response->assertStatus(201)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+            'blurb' => "test",
+            'image' => "url",
+            'year' => 2001,
+        ]);
+    }
+
+    public function test_addBook_validDataRequiredOnly(): void
+    {
+
+        $genre = Genre::factory()->create();
+
+        $response = $this->postJson('/api/books/', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+            
+        ]);
+
+
+        $response->assertStatus(201)
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message']);
+            });
+
+        $this->assertDatabaseHas('books', [
+            'title' =>  'hfjdshfsja',
+            'author' =>  'hasbulla',
+            'genre_id' => $genre->id,
+        ]);
+    }
+
+    public function test_addBook_invalidData(): void
+    {
+        $response = $this->postJson('/api/books/', [
+            'title' => 123,
+            'author' => 123,
+            'genre_id' => 5,
+            'blurb' => 123,
+            'image' => 5,
+            'year' =>  2040,
+
+        ]);
+
+        $response->assertStatus(422)
+            ->assertInvalid([
+                'title',
+                'author',
+                'genre_id',
+                'blurb',
+                'image',
+                'year'
+            ]);
+    }
+
+    public function test_addBook_noData(): void
+    {
+
+        $response = $this->postJson('/api/books/', [
+            'title' => '',
+            'author' => '',
+            'genre_id' => '',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertInvalid([
+                'title',
+                'author',
+                'genre_id'
+            ]);
     }
 }
