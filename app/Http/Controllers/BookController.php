@@ -13,34 +13,34 @@ class BookController extends Controller
 
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
+            'genre' => 'integer|exists:genres,id',
         ]);
 
-        $hidden = ['genre_id',
-            'review_id',
-            'deleted_at',
-            'deleted',
-            'email',
-            'claimed',
-            'year',
-            'page_count',
-            'claimed_by_name',
-            'updated_at',
-            'created_at',
-            'blurb',
-        ];
+        $hidden =
+            [
+                'review_id',
+                'deleted',
+                'year',
+                'page_count',
+                'claimed_by_name',
+                'blurb',
+            ];
 
         $claimed = $request->claimed;
-        if ($claimed !== null) {
-            $books = Book::with(['genre:id,name'])->where('claimed', $claimed)->get()->makeHidden($hidden);
+        $genre = $request->genre;
 
-            return response()->json([
-                'data' => $books,
-                'message' => 'Book successfully retrieved',
-            ]);
-        } $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
+        $books = Book::with(['genre:id,name']);
+
+        if ($claimed) {
+            $books = $books->where('claimed', $claimed);
+        }
+
+        if ($genre) {
+            $books = $books->where('genre_id', $genre);
+        }
 
         return response()->json([
-            'data' => $books,
+            'data' => $books->get()->makeHidden($hidden),
             'message' => 'Book successfully retrieved',
         ]);
     }
@@ -93,7 +93,6 @@ class BookController extends Controller
                 ]);
             }
         }
-
     }
 
     public function returnBook(int $id, Request $request)
@@ -101,44 +100,30 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if (!$bookToUpdate) {
-            return response()->json([
-                'message' => "Book $id was not found",
-            ], 404);
-        }
-
-        $request->validate([
-            'email' => 'string|email|max:255|required'
-        ]);
-
-        if ($bookToUpdate->claimed == 0) {
-            return response()->json([
-                'message' => "Book $id is not currently claimed",
-            ], 400);
-        } elseif ($bookToUpdate->claimed == 1) {
-
-            if ($bookToUpdate->email != $request->email) {
+        if ($bookToUpdate) {
+            if ($bookToUpdate->claimed == 0) {
                 return response()->json([
-                    'message' => "Book $id was not returned. $request->email did not claim this book."
+                    'message' => "Book $id is not currently claimed",
                 ], 400);
-            }
+            } elseif ($bookToUpdate->claimed == 1) {
 
-            $bookToUpdate->email = "";
-            $bookToUpdate->claimed_by_name = "";
-            $bookToUpdate->claimed = 0;
-
-            if ($bookToUpdate->save()) {
-                return response()->json([
-                    'message' => "Book $id was returned",
+                $request->validate([
+                    'email' => 'string|email|max:255|required',
                 ]);
-            }
 
-            return response()->json([
-                "message" => "Book $id was not able to be returned"
-            ], 500);
+                $bookToUpdate->email = '';
+                $bookToUpdate->claimed = 0;
+
+                if ($bookToUpdate->save()) {
+                    return response()->json([
+                        'message' => "Book $id was returned",
+                    ]);
+                }
+            }
         }
+
         return response()->json([
-            "message" => "Book $id was not able to be returned"
-        ], 500);
+            'message' => "Book $id was not found",
+        ], 404);
     }
 }
