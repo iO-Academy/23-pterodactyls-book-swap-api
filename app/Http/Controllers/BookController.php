@@ -158,6 +158,6 @@ class BookController extends Controller
 
         return response()->json([
             'message' => 'Unexpected error occured'
-        ]);
+        ], 500);
     }
 }
