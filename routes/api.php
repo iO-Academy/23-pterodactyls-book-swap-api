@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,5 @@ Route::controller(BookController::class)->group(function () {
     Route::put('/books/claim/{id}', 'claimBook');
     Route::put('/books/return/{id}', 'returnBook');
 });
+
+Route::post('/reviews', [ReviewController::class, 'addReview']);
