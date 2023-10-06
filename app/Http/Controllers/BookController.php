@@ -13,7 +13,8 @@ class BookController extends Controller
 
         $request->validate([
             'claimed' => 'integer|min:0|max:1',
-            'genre' => 'integer|min:1|max:4',
+            'genre' => 'integer|exists:genres,id',
+            'search' => 'string|max:500',
         ]);
 
         $hidden = [
@@ -32,8 +33,9 @@ class BookController extends Controller
 
         $claimed = $request->claimed;
         $genre = $request->genre;
+        $search = $request->search;
 
-        $books = Book::with(['genre:id,name'])->get()->makeHidden($hidden);
+        $books = Book::with(['genre:id,name']);
 
         if ($claimed) {
             $books = $books->where('claimed', $claimed);
@@ -43,8 +45,14 @@ class BookController extends Controller
             $books = $books->where('genre_id', $genre);
         }
 
+        if ($search) {
+            $books = $books->where('title', 'LIKE', '%'.$search.'%')
+                ->orWhere('author', 'LIKE', '%'.$search.'%')
+                ->orWhere('blurb', 'LIKE', '%'.$search.'%');
+        }
+
         return response()->json([
-            'data' => $books,
+            'data' => $books->get()->makeHidden($hidden),
             'message' => 'Book successfully retrieved',
         ]);
     }
@@ -53,7 +61,7 @@ class BookController extends Controller
     {
         $book = Book::with(['genre:id,name', 'reviews:id,name,rating,review,book_id'])->find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => "Book with id $id not found",
             ], 404);
@@ -70,7 +78,7 @@ class BookController extends Controller
 
         $bookToUpdate = Book::find($id);
 
-        if (!$bookToUpdate) {
+        if (! $bookToUpdate) {
             return response()->json([
                 'message' => "Book $id was not found",
             ], 404);
